@@ -27,10 +27,13 @@ namespace EmployeePayrollService
 
                     this.connection.Open();
 
+                    Console.WriteLine("\nConnection established with the database");
+
                     SqlDataReader dr = cmd.ExecuteReader();
 
                     if (dr.HasRows)
                     {
+                        Console.WriteLine("\nReading Data Rows : ");
                         while (dr.Read())
                         {
                             employee.EmployeeName = dr.GetString(0);
