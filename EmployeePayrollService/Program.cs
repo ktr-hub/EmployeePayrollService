@@ -8,7 +8,18 @@ namespace EmployeePayrollService
         {
             EmployeeRepo repo = new EmployeeRepo();
             EmployeePayroll employee = new EmployeePayroll();
-            repo.GetAllEmployee();
+
+            employee.EmployeeName = "rao";
+            employee.BasicPay = 123456;
+            employee.StartDate = DateTime.Now;
+            employee.Department = ".Net";
+
+            if (repo.AddEmployee(employee))
+            {
+                Console.WriteLine("Added data to the database");
+            }
+
+            //repo.GetAllEmployee();
         }
     }
 }

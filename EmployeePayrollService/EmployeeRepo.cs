@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
@@ -61,6 +62,37 @@ namespace EmployeePayrollService
                 this.connection.Close();
             }
         }
-
+        public bool AddEmployee(EmployeePayroll employee)
+        {
+            try
+            {
+                using (this.connection)
+                {
+                    SqlCommand command = new SqlCommand("SpAddEmployeeDetails", this.connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@name", employee.EmployeeName);
+                    command.Parameters.AddWithValue("@BasicPay", employee.BasicPay);
+                    command.Parameters.AddWithValue("@start_Date", employee.StartDate);
+                    command.Parameters.AddWithValue("@department", employee.Department);
+                    this.connection.Open();
+                    var result = command.ExecuteNonQuery();
+                    this.connection.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch(Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+                return false;
+            }
+            finally
+            {
+                this.connection.Close();
+            }
+        }
     }
 }
