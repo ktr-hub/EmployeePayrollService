@@ -96,7 +96,38 @@ namespace EmployeePayrollService
             return salaryDetail;
         }
 
-
+        public static void EmployeesBetweenDateRange(DateTime date1, DateTime date2)
+        {
+            SqlConnection SalaryConnection = ConnectionSetup();
+            try
+            {
+                using (SalaryConnection)
+                {
+                    SqlCommand command = new SqlCommand("sqRetrieveEmployeeSalary", SalaryConnection);
+                    SalaryConnection.Open();
+                    SqlDataReader dr = command.ExecuteReader();
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            DateTime date = (DateTime)dr["start"];
+                            if (date >= date1 && date <= date2)
+                            {
+                                Console.WriteLine(dr["empName"].ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+            finally
+            {
+                SalaryConnection.Close();
+            }
+        }
 
     }
 }

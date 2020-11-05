@@ -14,10 +14,12 @@ namespace EmployeePayrollService
             employee.StartDate = DateTime.Now;
             employee.Department = ".Net";
 
-            if (repo.AddEmployee(employee))
-            {
-                Console.WriteLine("Added data to the database");
-            }
+            //if (repo.AddEmployee(employee))
+            //{
+            //    Console.WriteLine("Added data to the database");
+            //}
+
+            Salary.EmployeesBetweenDateRange(DateTime.Parse("10-14-2019"), DateTime.Parse("10-15-2019"));
 
             //repo.GetAllEmployee();
         }
