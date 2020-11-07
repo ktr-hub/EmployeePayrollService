@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EmployeePayrollService
 {
-    class EmployeeRepo
+    public class EmployeeRepo
     {
         public static string connectionString = @"Data Source=(LocalDb)\Ktr;Initial Catalog=payroll_service;Integrated Security=True";
         SqlConnection connection = new SqlConnection(connectionString);
@@ -23,7 +24,6 @@ namespace EmployeePayrollService
                                      AND department.deptId = employeeDepartment.deptId
                                      AND payroll.empId = employeeDepartment.empId;";
 
-
                     SqlCommand cmd = new SqlCommand(query, this.connection);
 
                     this.connection.Open();
@@ -39,9 +39,8 @@ namespace EmployeePayrollService
                         {
                             employee.EmployeeName = dr.GetString(0);
                             employee.Department = dr.GetString(1);
-                            employee.NetPay = (double)dr.GetDecimal(2);
                             employee.Country = dr.GetString(3);
-                            Console.WriteLine("\n"+employee.EmployeeName + " " + employee.Department + " " + employee.NetPay + " " + employee.Country);
+                            Console.WriteLine("\n"+employee.EmployeeName + " " + employee.Department + " " + employee.Country);
                         }
                     }
                     else
@@ -68,10 +67,9 @@ namespace EmployeePayrollService
             {
                 using (this.connection)
                 {
-                    SqlCommand command = new SqlCommand("SpAddEmployeeDetails", this.connection);
+                    SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@name", employee.EmployeeName);
-                    command.Parameters.AddWithValue("@BasicPay", employee.BasicPay);
                     command.Parameters.AddWithValue("@start_Date", employee.StartDate);
                     command.Parameters.AddWithValue("@department", employee.Department);
                     this.connection.Open();
@@ -94,5 +92,39 @@ namespace EmployeePayrollService
                 this.connection.Close();
             }
         }
+
+        public void AddEmployeeWithThread(EmployeePayroll employee)
+        {
+            
+            try
+            {
+                using (this.connection)
+                {
+                    Task thread = new Task(
+                         () =>
+                         {
+                             SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
+                            this.connection.Open();
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@name", employee.EmployeeName);
+                            command.Parameters.AddWithValue("@start_Date", employee.StartDate);
+                            command.Parameters.AddWithValue("@department", employee.Department);
+
+                            command.ExecuteNonQuery();
+                         }
+                    );
+                   
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
+            finally
+            {
+                this.connection.Close();
+            }
+        }
+
     }
 }

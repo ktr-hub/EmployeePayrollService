@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using EmployeePayrollService.Model.SalaryModel;
 using System.Text;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace EmployeePayrollService
 {
@@ -53,8 +54,6 @@ namespace EmployeePayrollService
             }
             return 0;
         }
-
-
         public SalaryDetailModel getEmployeeObject(string empName)
         {
             SalaryDetailModel salaryDetail = new SalaryDetailModel();
@@ -95,7 +94,6 @@ namespace EmployeePayrollService
             }
             return salaryDetail;
         }
-
         public static void EmployeesBetweenDateRange(DateTime date1, DateTime date2)
         {
             SqlConnection SalaryConnection = ConnectionSetup();
@@ -126,6 +124,41 @@ namespace EmployeePayrollService
             finally
             {
                 SalaryConnection.Close();
+            }
+        }
+        public static void EmployeesGroupData()
+        {
+            SqlConnection connection = ConnectionSetup();
+            connection.Open();
+            try
+            {
+                using (connection)
+                {
+                    SqlCommand command = new SqlCommand("spRetrieveGroupData", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    SqlDataReader dr = command.ExecuteReader();
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            Console.WriteLine("Gender : " + dr["gender"].ToString());
+                            Console.WriteLine("Total Salary : " + dr["TotalSalary"]);
+                            Console.WriteLine("Average Salary : " + dr["AverageSalary"]);
+                            Console.WriteLine("Minimum Salary : " + dr["minimumBasicPay"]);
+                            Console.WriteLine("Maximum Salary : " + dr["maximumBasicPay"]);
+                            Console.WriteLine("Count : " + dr["TotalCount"]);
+                            Console.WriteLine();
+                        }
+                    }
+                }
+            }
+            catch(Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+            finally
+            {
+                connection.Close();
             }
         }
 
