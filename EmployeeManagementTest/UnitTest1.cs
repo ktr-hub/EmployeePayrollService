@@ -45,7 +45,6 @@ namespace EmployeeManagementTest
 
         /// <summary>
         /// UC1 without multithreading
-        /// To observe the difference in execution time
         /// </summary>
         [TestMethod]
         public void AddEmployee_ShouldMatchEmployeeEnries()
@@ -63,6 +62,35 @@ namespace EmployeeManagementTest
             repo.AddEmployee(employee);
             DateTime stopTime = DateTime.Now;
             Console.WriteLine("Duration without thread: " + (stopTime - startTime));
+        }
+
+        /// <summary>
+        /// UC2 with multithreading
+        /// To observe the difference in execution time
+        /// </summary>
+        [TestMethod]
+        public void AddEmployee_ShouldMatchEmployeeEnries_UsingMultiThreading()
+        {
+            EmployeeRepo repo = new EmployeeRepo();
+
+            EmployeePayroll employee = new EmployeePayroll();
+            employee.EmployeeName = "ktrrr";
+            employee.Department = ".Net";
+            employee.StartDate = DateTime.Parse("10-24-2009");
+
+            DateTime startTime = DateTime.Now;
+            repo.AddEmployee(employee);
+            repo.AddEmployee(employee);
+            repo.AddEmployee(employee);
+            DateTime stopTime = DateTime.Now;
+            Console.WriteLine("Duration without thread: " + (stopTime - startTime));
+
+            DateTime startTime2 = DateTime.Now;
+            repo.AddEmployeeWithThread(employee);
+            repo.AddEmployeeWithThread(employee);
+            repo.AddEmployeeWithThread(employee);
+            DateTime stopTime2 = DateTime.Now;
+            Console.WriteLine("Duration with thread: " + (stopTime2 - startTime2));
         }
 
     }

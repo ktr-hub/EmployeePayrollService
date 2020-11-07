@@ -65,31 +65,26 @@ namespace EmployeePayrollService
         {
             try
             {
-                using (this.connection)
+                this.connection.Open();
+                SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@name", employee.EmployeeName);
+                command.Parameters.AddWithValue("@start_Date", employee.StartDate);
+                command.Parameters.AddWithValue("@department", employee.Department);
+                var result = command.ExecuteNonQuery();
+                this.connection.Close();
+                if (result != 0)
                 {
-                    SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@name", employee.EmployeeName);
-                    command.Parameters.AddWithValue("@start_Date", employee.StartDate);
-                    command.Parameters.AddWithValue("@department", employee.Department);
-                    this.connection.Open();
-                    var result = command.ExecuteNonQuery();
-                    this.connection.Close();
-                    if (result != 0)
-                    {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 }
+                return false;
+
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
-                return false;
-            }
-            finally
-            {
                 this.connection.Close();
+                return false;
             }
         }
 
@@ -98,31 +93,24 @@ namespace EmployeePayrollService
             
             try
             {
-                using (this.connection)
-                {
-                    Task thread = new Task(
-                         () =>
-                         {
-                             SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
-                            this.connection.Open();
-                            command.CommandType = CommandType.StoredProcedure;
-                            command.Parameters.AddWithValue("@name", employee.EmployeeName);
-                            command.Parameters.AddWithValue("@start_Date", employee.StartDate);
-                            command.Parameters.AddWithValue("@department", employee.Department);
+                Task thread = new Task(
+                     () =>
+                     {
+                         SqlCommand command = new SqlCommand("sqAddEmployeeSalaryDetails", this.connection);
+                         this.connection.Open();
+                         command.CommandType = CommandType.StoredProcedure;
+                         command.Parameters.AddWithValue("@name", employee.EmployeeName);
+                         command.Parameters.AddWithValue("@start_Date", employee.StartDate);
+                         command.Parameters.AddWithValue("@department", employee.Department);
 
-                            command.ExecuteNonQuery();
-                         }
-                    );
-                   
-                }
+                         command.ExecuteNonQuery();
+                         this.connection.Close();
+                     }
+                );
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
-            }
-            finally
-            {
-                this.connection.Close();
             }
         }
 
